@@ -1,6 +1,11 @@
 package com.example.arsalankhan.firebasedatapayloadreceive;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
@@ -20,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
      */
 
     private TextView textViewTitle,textViewMessage;
+    BroadcastReceiver broadcastReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +37,24 @@ public class MainActivity extends AppCompatActivity {
 
         //Receiving payload data
         receivePayload();
+
+         broadcastReceiver=new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                textViewTitle.setText(intent.getStringExtra("title"));
+                textViewMessage.setText(intent.getStringExtra("message"));
+            }
+        };
+
+        // Registrating the Broadcast Receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,new IntentFilter(FcmMessagingServices.intent_filter));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
     }
 
     private void receivePayload() {
@@ -61,4 +85,5 @@ public class MainActivity extends AppCompatActivity {
              */
         }
     }
+
 }
